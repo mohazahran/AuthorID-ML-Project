@@ -8,7 +8,7 @@ from Helper import Helper
 
 def tryOnlineLearn():
     testShare = 0.25
-    valShare = 0.4
+    valShare = 0.25
     trainingFeatures, trainingLabels = Helper.parseGenderBlogDataset('blog-gender-dataset.csv')   
     if(FEATURE_TYPE == 'word2vec'):
         trainingFeatures = readDataVecs('genderBlogDatasetVectors.txt')    
@@ -50,43 +50,43 @@ def paramSelectOnlineLearning():
     print ('>> Parsing all data sets ...')
     testShare = 0.25
     valShare = 0.25    
-    trainingFeatures, trainingLabels = Helper.parseGenderBlogDataset('blog-gender-dataset.csv')
+    trainingData, trainingLabels = Helper.parseGenderBlogDataset('blog-gender-dataset.csv')
        
     print ('>> Building vocabulary ...')
     #vocab = buildVocab(trainingData, valData)        
          
     for feat in FEATURE_TYPE_LIST:
         global FEATURE_TYPE
-        FEATURE_TYPE = feat
-        
-        if(feat == 'word2vec'):
-            trainingFeatures = readDataVecs('genderBlogDatasetVectors.txt')    
+        FEATURE_TYPE = feat               
                          
         for boolean in BOOLEAN_TYPE_LIST:
             global BOOLEAN_TYPE
             BOOLEAN_TYPE = boolean
              
             if(feat != 'word2vec'):
-                vocab = buildVocab(trainingFeatures)
-                trainingFeatures = data2bow(trainingFeatures,vocab) 
+                vocab = buildVocab(trainingData)
+                trainingFeatures = data2bow(trainingData,vocab) 
+                
+            if(feat == 'word2vec'):
+                trainingFeatures = readDataVecs('genderBlogDatasetVectors.txt')    
                 
             tln = len(trainingFeatures)
-            valData = trainingFeatures[0:int(tln*valShare)]
+            valFeatures = trainingFeatures[0:int(tln*valShare)]
             valLabel = trainingLabels[0:int(tln*valShare)]
-            vln = len(valData)
-            testData = trainingFeatures[vln:int(vln+tln*testShare)]
+            vln = len(valFeatures)
+            testFeatures = trainingFeatures[vln:int(vln+tln*testShare)]
             testLabel = trainingLabels[vln:int(vln+tln*testShare)]
-            ln = len(valData)+len(testData)
+            ln = len(valFeatures)+len(testFeatures)
             trainingFeatures = trainingFeatures[ln:]
-            trainingLabels = trainingLabels[ln:]                
+            trainingOnlyLabels = trainingLabels[ln:]                
             
-            print ('>> Starting Training ...')
+            #print ('>> Starting Training ...')
             for typee in LEARNING_TYPE_LIST:
                 for margin in MARGIN_LIST:
                     for maxIter in MAX_ITERATION_LIST:
                         for lrate in LEARNING_RATE_LIST:
                              
-                            try:
+                            #try:
                                 global MARGIN
                                 MARGIN = margin                                                    
                                   
@@ -105,23 +105,23 @@ def paramSelectOnlineLearning():
                                 print (myStr)
                                 #print ('>> Starting training ...')
                                 if(LEARNING_TYPE == 'p'):
-                                    model = perceptron(trainingFeatures, trainingLabels)
+                                    model = perceptron(trainingFeatures, trainingOnlyLabels)
                                 elif(LEARNING_TYPE == 'avgP'):
-                                    model = avgPerceptron(trainingFeatures, trainingLabels)
+                                    model = avgPerceptron(trainingFeatures, trainingOnlyLabels)
                                 elif(LEARNING_TYPE == 'w'):
-                                    model = winnow(trainingFeatures, trainingLabels)
+                                    model = winnow(trainingFeatures, trainingOnlyLabels)
                                 else:
-                                    model = kernelPerceptron(trainingFeatures, trainingLabels)
+                                    model = kernelPerceptron(trainingFeatures, trainingOnlyLabels)
                                   
                                   
                                 #print ('>> Making predictions ...')
-                                predictionsTraining = classify(trainingFeatures, trainingLabels, model, trainingFeatures, trainingLabels)    
-                                predictionsVal = classify(valData, valLabel, model, trainingFeatures, trainingLabels)
-                                predictionsTest = classify(testData, testLabel, model, trainingFeatures, trainingLabels)
+                                predictionsTraining = classify(trainingFeatures, trainingOnlyLabels, model, trainingFeatures, trainingOnlyLabels)    
+                                predictionsVal = classify(valFeatures, valLabel, model, trainingFeatures, trainingOnlyLabels)
+                                predictionsTest = classify(testFeatures, testLabel, model, trainingFeatures, trainingOnlyLabels)
                                   
                                 #print ('>> Calculating performance ...')
                                 #print('Training set:')
-                                res = checkPerformance(trainingLabels, predictionsTraining)
+                                res = checkPerformance(trainingOnlyLabels, predictionsTraining)
                                 writer.write('\nTRAIN: '+res)
                                 #print('Validation set:')
                                 res = checkPerformance(valLabel, predictionsVal)
@@ -131,9 +131,9 @@ def paramSelectOnlineLearning():
                                 writer.write('\nTEST : '+res)
                                   
                                 writer.flush()
-                            except:
-                                writer.write('>> Expection !')
-                                writer.flush()
+                           # except:
+                            #    writer.write('>> Expection !')
+                            #    writer.flush()
                                 
                   
     print('DONE !') 

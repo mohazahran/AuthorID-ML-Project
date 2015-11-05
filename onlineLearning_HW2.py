@@ -13,15 +13,15 @@ import sys
 
 MAX_ITERATION_LIST = [50]
 # MAX_ITERATION = 1
-LEARNING_RATE_LIST = [0.1,0.3]
+LEARNING_RATE_LIST = [0.1]
 # LEARNING_RATE = 0.01
-LEARNING_TYPE_LIST = ['p','avgP','w']
+LEARNING_TYPE_LIST = ['avgP']
 # LEARNING_TYPE = 'kernelP'
-FEATURE_TYPE_LIST = ['unigram','bigram', 'both', 'word2vec']
+FEATURE_TYPE_LIST = ['unigram', 'bigram', 'both', 'word2vec']
 # FEATURE_TYPE = 'unigram'
 BOOLEAN_TYPE_LIST = [0,1]
 # BOOLEAN_TYPE = 1
-MARGIN_LIST = [0,0.1,0.2]
+MARGIN_LIST = [0,0.1,0.2,0.5]
 # MARGIN = 0.1
 
 MAX_ITERATION = 50
