@@ -79,7 +79,8 @@ def paramSelectOnlineLearning():
             ln = len(valData)+len(testData)
             trainingFeatures = trainingFeatures[ln:]
             trainingLabels = trainingLabels[ln:]                
-             
+            
+            print ('>> Starting Training ...')
             for typee in LEARNING_TYPE_LIST:
                 for margin in MARGIN_LIST:
                     for maxIter in MAX_ITERATION_LIST:
