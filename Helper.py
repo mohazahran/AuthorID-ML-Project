@@ -4,6 +4,7 @@ Created on Nov 2, 2015
 @author: zahran
 '''
 import re
+import random
 
 class Helper:
     
@@ -107,7 +108,38 @@ class Helper:
 #             w.write(line+'\n')
 #         w.close()
         return trainingData, trainingLabels
-                
+    
+    @staticmethod
+    def parseGenderBlogDatasetWithLabels(fileName):
+        trainingData = []       
+        data = open(fileName,'r')
+        example = ''
+        for line in data:            
+            line = line.strip()            
+            if(line != ''):
+                example += line
+            else:
+                parts = example.rsplit(',', 1)
+                label = parts[-1].strip()
+                rawData = []
+                cleanData = Helper.clean(parts[0])
+                example = ''                
+                if(label == 'M'):                   
+                    trainingData.append([cleanData, 1])                    
+                elif(label == 'F'):
+                    trainingData.append([cleanData, -1])                                 
+                else:                    
+                    continue
+#         w = open('genderBlogDataset.txt','w')
+#         for line in trainingData:
+#             w.write(line+'\n')
+#         w.close()
+        
+        random.shuffle(trainingData)
+        trainingLabels = [t[-1] for t in trainingData]
+        trainingData = [str(t[0:-1]).replace('[', '').replace(']', '').replace('\"', '') for t in trainingData]        
+        return trainingData, trainingLabels
+            
             
             
     

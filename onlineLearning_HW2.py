@@ -13,7 +13,7 @@ import sys
 
 MAX_ITERATION_LIST = [50]
 # MAX_ITERATION = 1
-LEARNING_RATE_LIST = [0.1]
+LEARNING_RATE_LIST = [0.1,0.3]
 # LEARNING_RATE = 0.01
 LEARNING_TYPE_LIST = ['avgP']
 # LEARNING_TYPE = 'kernelP'
@@ -21,7 +21,7 @@ FEATURE_TYPE_LIST = ['unigram', 'bigram', 'both', 'word2vec']
 # FEATURE_TYPE = 'unigram'
 BOOLEAN_TYPE_LIST = [0,1]
 # BOOLEAN_TYPE = 1
-MARGIN_LIST = [0,0.1,0.2,0.5]
+MARGIN_LIST = [0,1,10,50]
 # MARGIN = 0.1
 
 MAX_ITERATION = 50
@@ -29,7 +29,7 @@ LEARNING_RATE = 0.1
 LEARNING_TYPE = 'avgP'
 FEATURE_TYPE = 'word2vec'
 BOOLEAN_TYPE = 0
-MARGIN = 0.1
+MARGIN = 0
 
 
 
@@ -294,13 +294,17 @@ def checkPerformance(labels, predictions):
                 fp += 1
             else:
                 fn += 1
-    recall    = float(tp) / float (tp + fn) 
-    precision = float(tp) / float (tp + fp)
-    Fscore    = float(2*precision*recall) / float(precision+recall)        
-    accuracy  = float(tp+tn) / float(tp+fp+tn+fn)
+    try:
+        recall    = float(tp) / float (tp + fn) 
+        precision = float(tp) / float (tp + fp)
+        Fscore    = float(2*precision*recall) / float(precision+recall)        
+        accuracy  = float(tp+tn) / float(tp+fp+tn+fn)
+    except:
+        myStr = "Division by Zero !"
+        return myStr, 0
     
     myStr = "Recall="+str(recall)+" Precision="+str(precision)+" Fscore="+str(Fscore)+ " Accuracy="+str(accuracy)
-    return myStr 
+    return myStr, accuracy
         
 def readDataVecs(fileName):
     train = []
